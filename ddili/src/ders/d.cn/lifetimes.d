@@ -1,62 +1,68 @@
 Ddoc
 
-$(DERS_BOLUMU $(IX lifetime) Lifetimes and Fundamental Operations)
+$(DERS_BOLUMU $(IX lifetime) 生命周期和基本操作)
 
 $(P
-We will soon cover structs, the basic feature that allows the programmer to define application-specific types. Structs are for combining fundamental types and other structs together to define higher-level types that behave according to special needs of programs. After structs, we will learn about classes, which are the basis of the object oriented programming features of D.
+我们很快将会讲到结构体（ struct ）， 它最基本的特性是允许你自己定义特定的类型。结构体是为了根据特殊的需求去定制自己的类型，利用基本类型和其他自定义类型组合去实现。讲完结构体，我们将会讲到D语言实现面向对象编程的基础 ———— 类 （ class ）。
 )
 
 $(P
-Before getting to structs and classes, it will be better to talk about some important concepts first. These concepts will help understand structs and classes and some of their differences.
+在讲结构体和类之前，我们要先说一些其他重要的概念，以便以后更好的理解结构体和类的不同。
 )
 
 $(P
+我们在前面已经讲过 $(I 变量 ），有一部分的具体对象被我们称结构体（ struct ）和类( class ) 。我们会继续在这一章中调用两个概念变量。
 We have been calling any piece of data that represented a concept in a program a $(I variable). In a few places we have called struct and class variables specifically as $(I objects). I will continue calling both of these concepts variables in this chapter.
 )
 
 $(P
-Although this chapter includes only fundamental types, slices, and associative arrays; these concepts apply to user-defined types as well.
+虽然这长只用到基本类型、切片（ slices ） 和关联数组， 但是本章讲的概念同样适用于自定义类型。
 )
 
-$(H5 $(IX variable, lifetime) Lifetime of a variable)
+$(H5 $(IX variable, lifetime) 变量的生命周期)
 
 $(P
+变量的生命周期是指 这个变量从定义到释放， 对于很多类型，$(I 变得无法到达/使用 ) 和 $(I 被释放 ) 不是在相同的时间的。
 The time between when a variable is defined and when it is $(I finalized) is the lifetime of that variable. Although it is the case for many types, $(I becoming unavailable) and $(I being finalized) need not be at the same time.
 )
 
 $(P
+你应该记得在$(LINK2 /ders/d.cn/name_space.html, 名称的作用域章节) 里讲到的变量是怎么变得无法到达/使用 的。在例子部分，退出名字定义的所在的那个作用域就会使变量变得无法到达。
 You would remember from the $(LINK2 /ders/d.en/name_space.html, Name Scope chapter) how variables become unavailable. In simple cases, exiting the scope where a variable has been defined would make that variable unavailable.
 )
 
 $(P
+让我们看下下面的例子去回忆下：
 Let's consider the following example as a reminder:
 )
 
 ---
 void speedTest() {
-    int speed;               // Single variable ...
+    int speed;               // 一个变量  
 
     foreach (i; 0 .. 10) {
-        speed = 100 + i;     // ... takes 10 different values.
+        speed = 100 + i;     // ... 改变10次值
         // ...
     }
-} // ← 'speed' is unavailable beyond this point.
+} // ← 'speed' 现在是不可到达的在这个位置
 ---
 
 $(P
+上面代码中，变量 $(C speed) 的生命周期是在$(C speedTest()) function退出时结束。上面代码中也只有一个变量，它的值改变了多次，从100到109.
 The lifetime of the $(C speed) variable in that code ends upon exiting the $(C speedTest()) function. There is a single variable in the code above, which takes ten different values from 100 to 109.
 )
 
 $(P
+讲起来变量的生命周期，下面代码里的就和上面代码中的完全不一样了 ：
 When it comes to variable lifetimes, the following code is very different compared to the previous one:
 )
 
 ---
 void speedTest() {
     foreach (i; 0 .. 10) {
-        int speed = 100 + i; // Ten separate variables.
+        int speed = 100 + i; // 十个对立的变量
         // ...
-    } // ← Lifetime of each variable ends here.
+    } // ← 每个变量的生命周期都是到这里结束。Lifetime of each variable ends here.
 }
 ---
 
