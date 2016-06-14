@@ -67,66 +67,61 @@ void speedTest() {
 ---
 
 $(P
+这段代码里有十个独立的变量，每一个都有一个值。在每一次循环开始，一个新的变量的生存周期开始，当循环结束的时候生命周期也就结束了。
 There are ten separate variables in that code, each taking a single value. Upon every iteration of the loop, a new variable starts its life, which eventually ends at the end of each iteration.
 )
 
-$(H5 $(IX parameter, lifetime) Lifetime of a parameter)
+$(H5 $(IX parameter, lifetime) 函数参数的生存周期 )
 
 $(P
+参数生存周期取决于它的描述符。
 The lifetime of a parameter depends on its qualifiers:
 )
 
 $(P
-$(IX ref, parameter lifetime) $(C ref): The parameter is just an alias of the actual variable that is specified when calling the function. $(C ref) parameters do not affect the lifetimes of actual variables.
+$(IX ref, parameter lifetime) $(C ref): 函数的参数仅仅是在函数调用的时候指定的实际值的一个别名。 $(C ref) 函数的参数不影响实际变量的生命周期。
 )
 
 $(P
-$(IX in, parameter lifetime) $(C in): For $(I value types), the lifetime of the parameter starts upon entering the function and ends upon exiting it. For $(I reference types), the lifetime of the parameter is the same as with $(C ref).
+$(IX in, parameter lifetime) $(C in): 对于 $(I 值类型 ), 参数的生存周期从进入很熟开始，推出函数时结束。 对于 $(I 引用类型), 参数的生存周期和 $(C ref) 修饰是一样的.
 )
 
 $(P
-$(IX out, parameter lifetime) $(C out): Same with $(C ref), the parameter is just an alias of the actual variable that is specified when calling the function. The only difference is that the variable is set to its $(C .init) value automatically upon entering the function.
+$(IX out, parameter lifetime) $(C out): 和 $(C ref) 一样, 数的参数仅仅是在函数调用的时候指定的实际值的一个别名。 它们唯一的区别就是 这个变量在函数开始的时候会被自动重新初始化为 $(C .init) .
 )
 
 $(P
-$(IX lazy, parameter lifetime) $(C lazy): The life of the parameter starts when the parameter is actually used and ends right then.
+$(IX lazy, parameter lifetime) $(C lazy): 参数的生存周期实际上只有在实际使用的才会存在。
 )
 
 $(P
+下面例子中我们使用这四种修饰的参数，并在注释中解释：
 The following example uses these four types of parameters and explains their lifetimes in program comments:
 )
 
 ---
 void main() {
-    int main_in;      /* The value of main_in is copied to the
-                       * parameter. */
+    int main_in;      /* main_in值会复制到参数里 */
 
-    int main_ref;     /* main_ref is passed to the function as
-                       * itself. */
+    int main_ref;     /* main_ref 传递到函数里的还是它自己 */
 
-    int main_out;     /* main_out is passed to the function as
-                       * itself. Its value is set to int.init
-                       * upon entering the function. */
+    int main_out;     /* main_out 传递到函数里的还是它自己.  
+                       * 它的值在函数开始执行的时候会被设置为 int.init */
 
     foo(main_in, main_ref, main_out, aCalculation());
 }
 
 void foo(
-    in int p_in,       /* The lifetime of p_in starts upon
-                        * entering the function and ends upon
-                        * exiting the function. */
+    in int p_in,       /* p_in 的生存周期是在开始函数执行的时候开始，
+                        * 在函数执行完的时候结束。*/
 
-    ref int p_ref,     /* p_ref is an alias of main_ref. */
+    ref int p_ref,     /* p_ref 只是 main_ref 的一个别名 */
 
-    out int p_out,     /* p_out is an alias of main_out. Its
-                        * value is set to int.init upon
-                        * entering the function. */
+    out int p_out,     /* p_out 是 main_out 的一个别名。 
+                        * 它的值在函数开始执行的时候会被设置为 int.init */
 
-    lazy int p_lazy) { /* The lifetime of p_lazy starts when
-                        * it is used and ends when its use
-                        * ends. Its value is calculated by
-                        * calling aCalculation() every time
-                        * p_lazy is used in the function. */
+    lazy int p_lazy) { /* p_lazy 的生命周期是在其使用的时候开始，使用完就结束。
+                        * p_lazy 在函数使用中的值是每次通过调用 aCalculation() 计算出来的。 */
     // ...
 }
 
@@ -137,33 +132,35 @@ int aCalculation() {
 }
 ---
 
-$(H5 Fundamental operations)
+$(H5 基本操作 Fundamental operations)
 
 $(P
+不管什么类型，它们都有生存周期的三种基本操作。
 Regardless of its type, there are three fundamental operations throughout the lifetime of a variable:
 )
 
 $(UL
-$(LI $(B Initialization): The start of its life.)
-$(LI $(B Finalization): The end of its life.)
-$(LI $(B Assignment): Changing its value as a whole.)
+$(LI $(B 初始化): 开始其生命周期 )
+$(LI $(B 终止): 生命周期结束 )
+$(LI $(B 赋值 ): 整个的改变其值 )
 )
 
 $(P
+你首先必须初始化，才能作为一个对象。对于有些类型这可能是最后的操作。变量的值可能会更改在其生命周期之内。
 To be considered an object, it must first be initialized. There may be final operations for some types. The value of a variable may change during its lifetime.
 )
 
-$(H6 $(IX initialization) Initialization)
+$(H6 $(IX initialization) 初始化)
 
 $(P
-Every variable must be initialized before being used. Initialization involves two steps:
+每一个变量在使用之前都必须初始化。初始化分为两步进行：
 )
 
 $(OL
 
-$(LI $(B Reserving space for the variable): This space is where the value of the variable is stored in memory.)
+$(LI $(B 为变量分配空间 ): 这个空间是这个变量的值在内存中的储存位置。)
 
-$(LI $(B Construction): Setting the first value of the variable on that space (or the first values of the members of structs and classes).)
+$(LI $(B 构造 ): 设置这个变量的第一值到它的内存空间 ( 或者 是结构体或者类的成员的值 )。)
 
 )
 
