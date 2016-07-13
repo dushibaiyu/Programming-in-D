@@ -165,10 +165,12 @@ $(LI $(B 构造 ): 设置这个变量的第一值到它的内存空间 ( 或者 
 )
 
 $(P
+没一个变量在内存中都有专门为其保留的内存空间。编译产生一些代码就是为变量预先申请内存空间
 Every variable lives in a place in memory that is reserved for it. Some of the code that the compiler generates is about reserving space for each variable.
 )
 
 $(P
+让我们看下以下变量：
 Let's consider the following variable:
 )
 
@@ -177,6 +179,7 @@ Let's consider the following variable:
 ---
 
 $(P
+根据我们讲过的$(LINK2 /ders/d.cn/value_vs_reference.html, 值类型和引用类型)那节,我们可以想象一下这个变量在内存中的状态。
 As we have seen in $(LINK2 /ders/d.en/value_vs_reference.html, the Value Types and Reference Types chapter), we can imagine this variable living on some part of the memory:
 )
 
@@ -187,6 +190,7 @@ $(MONO
 )
 
 $(P
+一个变量被放置在内存的位置称为它的地址。在某种意义上，变量住在那个地址上。即使变量的值发生了变化，这个新值也还是存储在原来的那个地址的。
 The memory location that a variable is placed at is called its address. In a sense, the variable lives at that address. When the value of a variable is changed, the new value is stored at the same place:
 )
 
